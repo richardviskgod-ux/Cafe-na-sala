@@ -159,7 +159,9 @@ export const ListSalesResponseItem = zod.object({
   productName: zod.string(),
   paymentMethod: zod.string(),
   quantity: zod.number(),
+  installments: zod.number(),
   totalValue: zod.number(),
+  installmentValue: zod.number(),
   date: zod.string(),
 });
 export const ListSalesResponse = zod.array(ListSalesResponseItem);
@@ -172,4 +174,5 @@ export const CreateSaleBody = zod.object({
   productName: zod.string(),
   paymentMethod: zod.string(),
   quantity: zod.number(),
+  installments: zod.number(),
 });

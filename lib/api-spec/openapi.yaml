@@ -367,7 +367,11 @@ components:
           type: string
         quantity:
           type: integer
+        installments:
+          type: integer
         totalValue:
+          type: number
+        installmentValue:
           type: number
         date:
           type: string
@@ -377,7 +381,9 @@ components:
         - productName
         - paymentMethod
         - quantity
+        - installments
         - totalValue
+        - installmentValue
         - date
 
     CreateSaleBody:
@@ -391,8 +397,11 @@ components:
           type: string
         quantity:
           type: integer
+        installments:
+          type: integer
       required:
         - clientName
         - productName
         - paymentMethod
         - quantity
+        - installments

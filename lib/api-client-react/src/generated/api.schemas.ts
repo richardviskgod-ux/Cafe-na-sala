@@ -56,7 +56,9 @@ export interface Sale {
   productName: string;
   paymentMethod: string;
   quantity: number;
+  installments: number;
   totalValue: number;
+  installmentValue: number;
   date: string;
 }
 
@@ -65,4 +67,5 @@ export interface CreateSaleBody {
   productName: string;
   paymentMethod: string;
   quantity: number;
+  installments: number;
 }

@@ -11,4 +11,5 @@ export interface CreateSaleBody {
   productName: string;
   paymentMethod: string;
   quantity: number;
+  installments: number;
 }

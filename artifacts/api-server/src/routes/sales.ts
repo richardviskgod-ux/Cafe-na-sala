@@ -5,6 +5,16 @@ import { CreateSaleBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
+function formatDate(d: Date) {
+  return d.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 router.get("/sales", async (_req, res) => {
   const sales = await db.select().from(salesTable).orderBy(salesTable.id);
   res.json(
@@ -14,20 +24,18 @@ router.get("/sales", async (_req, res) => {
       productName: s.productName,
       paymentMethod: s.paymentMethod,
       quantity: s.quantity,
+      installments: s.installments,
       totalValue: parseFloat(s.totalValue),
-      date: s.date.toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      installmentValue: parseFloat(s.installmentValue),
+      date: formatDate(s.date),
     }))
   );
 });
 
 router.post("/sales", async (req, res) => {
   const body = CreateSaleBody.parse(req.body);
+
+  const installments = Math.max(1, body.installments);
 
   // Find product and check stock
   const [product] = await db
@@ -46,9 +54,9 @@ router.post("/sales", async (req, res) => {
       .where(eq(productsTable.name, body.productName));
   }
 
-  // Compute total value
   const pricePerUnit = product ? parseFloat(product.price) : 0;
   const totalValue = pricePerUnit * body.quantity;
+  const installmentValue = totalValue / installments;
 
   // Auto-register purchase on linked client (if not avulso)
   if (body.clientName !== "Avulso" && body.clientName.trim() !== "") {
@@ -61,10 +69,7 @@ router.post("/sales", async (req, res) => {
       const newBalance = newTotal - parseFloat(client.totalPaid);
       await db
         .update(clientsTable)
-        .set({
-          totalPurchases: String(newTotal),
-          balance: String(newBalance),
-        })
+        .set({ totalPurchases: String(newTotal), balance: String(newBalance) })
         .where(eq(clientsTable.id, client.id));
     }
   }
@@ -76,7 +81,9 @@ router.post("/sales", async (req, res) => {
       productName: body.productName,
       paymentMethod: body.paymentMethod,
       quantity: body.quantity,
+      installments,
       totalValue: String(totalValue),
+      installmentValue: String(installmentValue),
     })
     .returning();
 
@@ -86,14 +93,10 @@ router.post("/sales", async (req, res) => {
     productName: sale.productName,
     paymentMethod: sale.paymentMethod,
     quantity: sale.quantity,
+    installments: sale.installments,
     totalValue: parseFloat(sale.totalValue),
-    date: sale.date.toLocaleString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+    installmentValue: parseFloat(sale.installmentValue),
+    date: formatDate(sale.date),
   });
 });
 
