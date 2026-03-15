@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Coffee in the Room"
+version = "1.0.0"
+id = "artifacts/coffee-in-the-room"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 24557
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/coffee-in-the-room run dev"
+
+[services.env]
+PORT = "24557"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/coffee-in-the-room", "run", "build"]
+publicDir = "artifacts/coffee-in-the-room/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

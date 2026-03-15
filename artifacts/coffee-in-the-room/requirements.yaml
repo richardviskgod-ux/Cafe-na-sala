@@ -1,0 +1,18 @@
+packages:
+  "framer-motion": "For fluid, premium animations and page transitions"
+  "lucide-react": "For beautiful, consistent iconography"
+  "clsx": "For conditional class merging"
+  "tailwind-merge": "For merging tailwind classes without conflicts"
+  "date-fns": "For formatting dates nicely"
+  "react-hook-form": "For robust form handling"
+  "@hookform/resolvers": "For zod validation integration"
+
+images:
+  - path: "artifacts/coffee-in-the-room/public/images/coffee-bg.png"
+    description: "Abstract, modern, dark purple gradient background with subtle, stylized geometric coffee beans and soft glowing light leaks. Very sleek, premium, and minimal."
+    aspect_ratio: "16:9"
+
+notes:
+  - Using generated React Query hooks from @workspace/api-client-react
+  - Auth is simulated client-side via localStorage per instructions
+  - Strict adherence to the dark purple glassmorphic design system

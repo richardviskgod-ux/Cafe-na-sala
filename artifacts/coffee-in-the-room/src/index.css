@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+
+  --color-background: hsl(275 40% 6%);
+  --color-foreground: hsl(280 20% 95%);
+  
+  --color-card: rgba(255, 255, 255, 0.03);
+  --color-card-foreground: hsl(280 20% 95%);
+  --color-card-border: rgba(255, 255, 255, 0.08);
+  
+  --color-primary: hsl(270 80% 60%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-primary-hover: hsl(270 80% 65%);
+  
+  --color-secondary: rgba(255, 255, 255, 0.1);
+  --color-secondary-foreground: hsl(0 0% 100%);
+  
+  --color-muted: rgba(255, 255, 255, 0.05);
+  --color-muted-foreground: hsl(280 10% 65%);
+  
+  --color-accent: hsl(290 85% 55%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  
+  --color-destructive: hsl(350 80% 55%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-input: rgba(0, 0, 0, 0.2);
+  --color-ring: hsl(270 80% 60%);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans antialiased min-h-screen selection:bg-primary/30;
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(217, 70, 239, 0.15), transparent 25%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+/* Custom Steam Animation */
+@keyframes rise {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  50% { transform: translateY(-20px) scale(1.2); opacity: 0.8; }
+  100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
+}
+
+.animate-steam-1 { animation: rise 3s infinite ease-in-out; }
+.animate-steam-2 { animation: rise 3s infinite ease-in-out 1s; }
+.animate-steam-3 { animation: rise 3s infinite ease-in-out 2s; }
+
+/* Custom Scrollbar for Glass UI */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

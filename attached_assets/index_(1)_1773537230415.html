@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Coffee in the Room</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #2b0a3d;
+    color: white;
+}
+
+header {
+    background: linear-gradient(45deg, #5a00b3, #9b4de0);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+nav {
+    display: flex;
+    background: #3d0d5d;
+}
+
+nav button {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    background: #5a00b3;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px #3d0d5d;
+}
+
+nav button:hover {
+    background: #9b4de0;
+    transform: translateY(-3px);
+    box-shadow: 0 8px #3d0d5d;
+}
+
+button {
+    padding: 10px 15px;
+    margin: 5px;
+    background: #8e2de2;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 5px #5a00b3;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: #b76bf5;
+    transform: translateY(-3px);
+    box-shadow: 0 8px #5a00b3;
+}
+
+.card {
+    background: linear-gradient(145deg, #4b0082, #6a0dad);
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.6);
+}
+
+input, select {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    width: 100%;
+    box-shadow: inset 0 0 5px rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+
+.container {
+    padding: 20px;
+}
+</style>
+</head>
+<body>
+
+<!-- TELA DE LOGIN COM ILUSTRAÇÃO 2D -->
+<div id="loginScreen" class="container" style="position:relative; text-align:center;">
+
+  <!-- Ilustração 2D -->
+  <svg width="320" height="220" style="margin-bottom:20px;">
+    <rect x="0" y="0" width="320" height="220" fill="#3d0d5d" rx="15"/>
+    <rect x="60" y="150" width="200" height="50" fill="#5a00b3" rx="10"/>
+    <rect x="130" y="50" width="60" height="40" fill="#222" stroke="#fff" stroke-width="2"/>
+    <rect x="135" y="55" width="50" height="30" fill="#6f4e37"/>
+    <circle cx="80" cy="160" r="20" fill="#fdd"/>
+    <rect x="70" y="160" width="20" height="40" fill="#0a0" rx="5"/>
+    <circle cx="240" cy="160" r="20" fill="#fdd"/>
+    <rect x="230" y="160" width="20" height="40" fill="#0a0" rx="5"/>
+    <circle cx="80" cy="150" r="5" fill="#6f4e37"/>
+    <circle cx="240" cy="150" r="5" fill="#6f4e37"/>
+    <ellipse cx="80" cy="140" rx="3" ry="6" fill="white" opacity="0.6">
+      <animate attributeName="cy" values="140;120;140" dur="2s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="240" cy="140" rx="3" ry="6" fill="white" opacity="0.6">
+      <animate attributeName="cy" values="140;120;140" dur="2s" repeatCount="indefinite"/>
+    </ellipse>
+  </svg>
+
+  <h2>Bem-vindo ao Coffee in the Room</h2>
+  <input id="codigoAcesso" placeholder="Digite o código de acesso">
+  <button onclick="verificarCodigo()">Entrar</button>
+</div>
+
+<!-- TELA PRINCIPAL -->
+<div id="mainScreen" style="display:none">
+
+<header>
+<h2>Coffee in the Room</h2>
+</header>
+
+<nav>
+<button onclick="abrirAba('produtos')">Produtos</button>
+<button onclick="abrirAba('clientes')">Clientes</button>
+<button onclick="abrirAba('vendas')">Vendas</button>
+</nav>
+
+<div class="container">
+
+<!-- ABA PRODUTOS -->
+<div id="produtos">
+<h3>Cadastrar Produto</h3>
+<input id="nome" placeholder="Nome">
+<input id="preco" placeholder="Preço">
+<input id="estoque" placeholder="Estoque">
+<br>
+<button onclick="salvarProduto()">Salvar Produto</button>
+<h3>Produtos</h3>
+<div id="listaProdutos"></div>
+</div>
+
+<!-- ABA CLIENTES -->
+<div id="clientes" style="display:none">
+<h3>Cadastrar Cliente</h3>
+<input id="nomeCliente" placeholder="Nome">
+<input id="cpfCliente" placeholder="CPF">
+<input id="telefoneCliente" placeholder="Telefone">
+<input id="aniversarioCliente" type="date">
+<br>
+<button onclick="salvarCliente()">Salvar Cliente</button>
+<h3>Clientes</h3>
+<div id="listaClientes"></div>
+</div>
+
+<!-- ABA VENDAS -->
+<div id="vendas" style="display:none">
+<h3>Registrar Venda</h3>
+<input id="clienteVenda" placeholder="Nome ou CPF do cliente">
+<input id="produtoVenda" placeholder="Produto">
+<select id="pagamento">
+<option>Dinheiro</option>
+<option>Pix</option>
+<option>Cartão</option>
+</select>
+<br>
+<button onclick="registrarVenda()">Registrar Venda</button>
+<h3>Histórico de vendas</h3>
+<div id="listaVendas"></div>
+</div>
+
+</div> <!-- container principal -->
+
+</div> <!-- mainScreen -->
+
+<script src="produtos.js"></script>
+</body>
+</html>
