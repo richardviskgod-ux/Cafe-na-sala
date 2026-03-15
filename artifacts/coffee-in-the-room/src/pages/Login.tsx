@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useListClients } from "@workspace/api-client-react";
+import { getSystemCode } from "./Admin";
 
 export default function Login() {
   const [code, setCode] = useState("");
@@ -21,7 +22,7 @@ export default function Login() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (code === "1234") {
+    if (code === getSystemCode()) {
       localStorage.setItem("auth", "true");
       
       // Check birthdays

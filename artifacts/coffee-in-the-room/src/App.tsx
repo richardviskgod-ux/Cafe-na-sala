@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Products from "./pages/Products";
 import Clients from "./pages/Clients";
 import Sales from "./pages/Sales";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/not-found";
 
 const queryClient = new QueryClient();
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/products" component={Products} />
       <Route path="/clients" component={Clients} />
       <Route path="/sales" component={Sales} />
+      <Route path="/admin" component={Admin} />
       <Route path="/">
         {() => {
           const isAuth = localStorage.getItem("auth") === "true";

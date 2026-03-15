@@ -349,6 +349,8 @@ components:
           type: string
         paymentMethod:
           type: string
+        quantity:
+          type: integer
         date:
           type: string
       required:
@@ -356,6 +358,7 @@ components:
         - clientName
         - productName
         - paymentMethod
+        - quantity
         - date
 
     CreateSaleBody:
@@ -367,7 +370,10 @@ components:
           type: string
         paymentMethod:
           type: string
+        quantity:
+          type: integer
       required:
         - clientName
         - productName
         - paymentMethod
+        - quantity

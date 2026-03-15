@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Coffee, Users, ShoppingBag, LogOut } from "lucide-react";
+import { Coffee, Users, ShoppingBag, LogOut, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { name: "Produtos", href: "/products", icon: Coffee },
   { name: "Clientes", href: "/clients", icon: Users },
   { name: "Vendas", href: "/sales", icon: ShoppingBag },
+  { name: "Admin", href: "/admin", icon: Shield },
 ];
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -44,8 +45,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <div
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer whitespace-nowrap",
-                    isActive 
-                      ? "bg-primary/20 text-primary border border-primary/30 shadow-inner" 
+                    isActive
+                      ? "bg-primary/20 text-primary border border-primary/30 shadow-inner"
                       : "hover:bg-white/5 text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -57,7 +58,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <button 
+        <button
           onClick={handleLogout}
           className="mt-auto hidden md:flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-colors"
         >
@@ -70,9 +71,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 p-4 md:p-8 overflow-y-auto relative z-10">
         {/* Background Decorative */}
         <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none" />
-        <div className="relative z-10 max-w-6xl mx-auto">
-          {children}
-        </div>
+        <div className="relative z-10 max-w-6xl mx-auto">{children}</div>
       </main>
     </div>
   );

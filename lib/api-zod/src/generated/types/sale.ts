@@ -11,5 +11,6 @@ export interface Sale {
   clientName: string;
   productName: string;
   paymentMethod: string;
+  quantity: number;
   date: string;
 }

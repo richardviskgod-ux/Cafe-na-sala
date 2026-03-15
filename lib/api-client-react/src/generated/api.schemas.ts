@@ -54,6 +54,7 @@ export interface Sale {
   clientName: string;
   productName: string;
   paymentMethod: string;
+  quantity: number;
   date: string;
 }
 
@@ -61,4 +62,5 @@ export interface CreateSaleBody {
   clientName: string;
   productName: string;
   paymentMethod: string;
+  quantity: number;
 }
