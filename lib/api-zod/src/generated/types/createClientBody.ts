@@ -11,4 +11,5 @@ export interface CreateClientBody {
   cpf: string;
   phone: string;
   birthday?: string | null;
+  initialPurchase?: number | null;
 }

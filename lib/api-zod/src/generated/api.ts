@@ -83,6 +83,7 @@ export const CreateClientBody = zod.object({
   cpf: zod.string(),
   phone: zod.string(),
   birthday: zod.string().nullish(),
+  initialPurchase: zod.number().nullish(),
 });
 
 /**
@@ -143,6 +144,13 @@ export const RegisterPaymentResponse = zod.object({
 });
 
 /**
+ * @summary Reset all system data (clients, products, sales)
+ */
+export const ResetSystemResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
  * @summary List all sales
  */
 export const ListSalesResponseItem = zod.object({
@@ -151,6 +159,7 @@ export const ListSalesResponseItem = zod.object({
   productName: zod.string(),
   paymentMethod: zod.string(),
   quantity: zod.number(),
+  totalValue: zod.number(),
   date: zod.string(),
 });
 export const ListSalesResponse = zod.array(ListSalesResponseItem);

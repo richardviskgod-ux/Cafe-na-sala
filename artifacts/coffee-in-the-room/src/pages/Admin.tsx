@@ -1,10 +1,17 @@
 import { useState } from "react";
-import { Shield, KeyRound, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { Shield, KeyRound, Eye, EyeOff, CheckCircle2, AlertTriangle } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { DashboardLayout } from "./DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import {
+  useResetSystem,
+  getListClientsQueryKey,
+  getListProductsQueryKey,
+  getListSalesQueryKey,
+} from "@workspace/api-client-react";
 
 const STORAGE_KEY = "systemCode";
 const DEFAULT_CODE = "1234";
@@ -22,8 +29,19 @@ export default function Admin() {
   const [changed, setChanged] = useState(false);
 
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const handleChangeCode = (e: React.FormEvent) => {
+  const resetSystem = useResetSystem({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListClientsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getListSalesQueryKey() });
+      },
+    },
+  });
+
+  const handleChangeCode = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const stored = getSystemCode();
@@ -40,12 +58,16 @@ export default function Admin() {
       return;
     }
 
+    // Reset all system data first
+    await resetSystem.mutateAsync({});
+
+    // Save new code
     localStorage.setItem(STORAGE_KEY, newCode);
     setChanged(true);
     setCurrentCode("");
     setNewCode("");
     setConfirmCode("");
-    toast({ title: "Código alterado com sucesso!" });
+    toast({ title: "Código alterado e sistema zerado com sucesso!" });
   };
 
   return (
@@ -66,14 +88,25 @@ export default function Admin() {
               Mudar Código de Acesso
             </h2>
             <p className="text-sm text-white/70 mt-1">
-              O código atual é usado na tela de login
+              Altera o código e apaga todos os dados do sistema
             </p>
           </div>
           <CardContent className="p-6">
+            {/* Warning banner */}
+            <div className="mb-6 flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-xl p-4">
+              <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <p className="text-sm leading-relaxed">
+                <span className="font-semibold">Atenção:</span> Ao mudar o código, todos os clientes,
+                produtos e vendas serão <span className="font-semibold">apagados permanentemente</span>.
+              </p>
+            </div>
+
             {changed && (
               <div className="mb-6 flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl p-4">
                 <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-                <span className="text-sm font-medium">Código alterado! Use o novo código no próximo login.</span>
+                <span className="text-sm font-medium">
+                  Sistema zerado! Use o novo código no próximo login.
+                </span>
               </div>
             )}
 
@@ -132,15 +165,20 @@ export default function Admin() {
                 />
               </div>
 
-              <Button type="submit" className="w-full h-12 mt-2">
-                Salvar Novo Código
+              <Button
+                type="submit"
+                className="w-full h-12 mt-2 bg-destructive hover:bg-destructive/90"
+                disabled={resetSystem.isPending}
+              >
+                {resetSystem.isPending ? "Zerando sistema..." : "Salvar Novo Código e Zerar Sistema"}
               </Button>
             </form>
           </CardContent>
         </Card>
 
         <p className="text-xs text-muted-foreground text-center mt-4 px-4">
-          O código padrão é <span className="font-mono text-primary">1234</span>. Guarde o novo código em local seguro — não é possível recuperá-lo sem o código atual.
+          O código padrão é <span className="font-mono text-primary">1234</span>. Guarde o novo
+          código em local seguro — não é possível recuperá-lo sem o código atual.
         </p>
       </div>
     </DashboardLayout>

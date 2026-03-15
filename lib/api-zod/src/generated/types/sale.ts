@@ -12,5 +12,6 @@ export interface Sale {
   productName: string;
   paymentMethod: string;
   quantity: number;
+  totalValue: number;
   date: string;
 }

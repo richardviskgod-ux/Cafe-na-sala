@@ -33,7 +33,38 @@ router.get("/clients", async (_req, res) => {
 
 router.post("/clients", async (req, res) => {
   const body = CreateClientBody.parse(req.body);
+
+  // Upsert by CPF: if CPF exists, update name/phone/birthday and optionally add a purchase
+  const [existing] = await db
+    .select()
+    .from(clientsTable)
+    .where(eq(clientsTable.cpf, body.cpf));
+
+  if (existing) {
+    const addAmount = body.initialPurchase ?? 0;
+    const newTotal = parseFloat(existing.totalPurchases) + addAmount;
+    const newBalance = newTotal - parseFloat(existing.totalPaid);
+
+    const [updated] = await db
+      .update(clientsTable)
+      .set({
+        name: body.name,
+        phone: body.phone,
+        birthday: body.birthday ?? null,
+        totalPurchases: String(newTotal),
+        balance: String(newBalance),
+      })
+      .where(eq(clientsTable.cpf, body.cpf))
+      .returning();
+
+    res.status(200).json(formatClient(updated));
+    return;
+  }
+
+  // New client
   const code = Math.floor(1000 + Math.random() * 9000);
+  const initialPurchase = body.initialPurchase ?? 0;
+
   const [client] = await db
     .insert(clientsTable)
     .values({
@@ -42,11 +73,12 @@ router.post("/clients", async (req, res) => {
       phone: body.phone,
       birthday: body.birthday ?? null,
       code,
-      totalPurchases: "0",
+      totalPurchases: String(initialPurchase),
       totalPaid: "0",
-      balance: "0",
+      balance: String(initialPurchase),
     })
     .returning();
+
   res.status(201).json(formatClient(client));
 });
 

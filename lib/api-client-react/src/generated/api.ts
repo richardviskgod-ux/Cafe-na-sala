@@ -859,6 +859,87 @@ export const useRegisterPayment = <
 };
 
 /**
+ * @summary Reset all system data (clients, products, sales)
+ */
+export const getResetSystemUrl = () => {
+  return `/api/admin/reset`;
+};
+
+export const resetSystem = async (
+  options?: RequestInit,
+): Promise<SuccessResponse> => {
+  return customFetch<SuccessResponse>(getResetSystemUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getResetSystemMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof resetSystem>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof resetSystem>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["resetSystem"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof resetSystem>>,
+    void
+  > = () => {
+    return resetSystem(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ResetSystemMutationResult = NonNullable<
+  Awaited<ReturnType<typeof resetSystem>>
+>;
+
+export type ResetSystemMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Reset all system data (clients, products, sales)
+ */
+export const useResetSystem = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof resetSystem>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof resetSystem>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getResetSystemMutationOptions(options));
+};
+
+/**
  * @summary List all sales
  */
 export const getListSalesUrl = () => {

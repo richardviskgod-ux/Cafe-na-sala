@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { db, salesTable, productsTable } from "@workspace/db";
+import { db, salesTable, productsTable, clientsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { CreateSaleBody } from "@workspace/api-zod";
 
@@ -14,7 +14,14 @@ router.get("/sales", async (_req, res) => {
       productName: s.productName,
       paymentMethod: s.paymentMethod,
       quantity: s.quantity,
-      date: s.date.toLocaleDateString("pt-BR"),
+      totalValue: parseFloat(s.totalValue),
+      date: s.date.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     }))
   );
 });
@@ -22,7 +29,7 @@ router.get("/sales", async (_req, res) => {
 router.post("/sales", async (req, res) => {
   const body = CreateSaleBody.parse(req.body);
 
-  // Decrement stock for the product if it exists, using quantity
+  // Find product and check stock
   const [product] = await db
     .select()
     .from(productsTable)
@@ -39,6 +46,29 @@ router.post("/sales", async (req, res) => {
       .where(eq(productsTable.name, body.productName));
   }
 
+  // Compute total value
+  const pricePerUnit = product ? parseFloat(product.price) : 0;
+  const totalValue = pricePerUnit * body.quantity;
+
+  // Auto-register purchase on linked client (if not avulso)
+  if (body.clientName !== "Avulso" && body.clientName.trim() !== "") {
+    const [client] = await db
+      .select()
+      .from(clientsTable)
+      .where(eq(clientsTable.name, body.clientName));
+    if (client) {
+      const newTotal = parseFloat(client.totalPurchases) + totalValue;
+      const newBalance = newTotal - parseFloat(client.totalPaid);
+      await db
+        .update(clientsTable)
+        .set({
+          totalPurchases: String(newTotal),
+          balance: String(newBalance),
+        })
+        .where(eq(clientsTable.id, client.id));
+    }
+  }
+
   const [sale] = await db
     .insert(salesTable)
     .values({
@@ -46,6 +76,7 @@ router.post("/sales", async (req, res) => {
       productName: body.productName,
       paymentMethod: body.paymentMethod,
       quantity: body.quantity,
+      totalValue: String(totalValue),
     })
     .returning();
 
@@ -55,7 +86,14 @@ router.post("/sales", async (req, res) => {
     productName: sale.productName,
     paymentMethod: sale.paymentMethod,
     quantity: sale.quantity,
-    date: sale.date.toLocaleDateString("pt-BR"),
+    totalValue: parseFloat(sale.totalValue),
+    date: sale.date.toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
   });
 });
 

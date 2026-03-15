@@ -43,6 +43,7 @@ export interface CreateClientBody {
   cpf: string;
   phone: string;
   birthday?: string | null;
+  initialPurchase?: number | null;
 }
 
 export interface AmountBody {
@@ -55,6 +56,7 @@ export interface Sale {
   productName: string;
   paymentMethod: string;
   quantity: number;
+  totalValue: number;
   date: string;
 }
 

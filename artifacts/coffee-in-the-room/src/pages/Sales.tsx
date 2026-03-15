@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { formatCurrency } from "@/lib/utils";
 import {
   useListSales,
   useCreateSale,
@@ -226,6 +227,9 @@ export default function Sales() {
                         <span className="text-sm text-muted-foreground">{sale.clientName}</span>
                       </div>
                       <div className="flex flex-col items-end gap-1">
+                        <span className="font-bold text-white text-base">
+                          {formatCurrency(sale.totalValue)}
+                        </span>
                         <div className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-md text-xs">
                           {getPaymentIcon(sale.paymentMethod)}
                           <span>{sale.paymentMethod}</span>
