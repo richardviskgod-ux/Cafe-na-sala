@@ -22,6 +22,7 @@ export default function Sales() {
     productName: "",
     paymentMethod: "Dinheiro",
     quantity: 1,
+    installments: 1,
   });
 
   const { toast } = useToast();
@@ -36,7 +37,7 @@ export default function Sales() {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListSalesQueryKey() });
         queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
-        setFormData({ clientName: "", productName: "", paymentMethod: "Dinheiro", quantity: 1 });
+        setFormData({ clientName: "", productName: "", paymentMethod: "Dinheiro", quantity: 1, installments: 1 });
         toast({ title: "Venda registrada com sucesso!" });
       },
       onError: (err: unknown) => {
@@ -150,10 +151,15 @@ export default function Sales() {
                     }
                     className="text-center text-xl font-bold h-12"
                   />
-                  {/* Subtotal preview */}
+                    {/* Subtotal preview */}
                   {selectedProduct && (
                     <p className="text-right text-sm text-primary font-semibold">
                       Subtotal: R$ {(selectedProduct.price * formData.quantity).toFixed(2)}
+                      {formData.installments > 1 && (
+                        <span className="text-white/50 font-normal ml-1">
+                          ({formData.installments}x R$ {(selectedProduct.price * formData.quantity / formData.installments).toFixed(2)})
+                        </span>
+                      )}
                     </p>
                   )}
                 </div>
@@ -178,6 +184,24 @@ export default function Sales() {
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Parcelas */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-white/80 flex items-center gap-2">
+                    <CreditCard className="w-4 h-4" />
+                    Parcelas
+                  </label>
+                  <Input
+                    type="number"
+                    min={1}
+                    required
+                    value={formData.installments}
+                    onChange={(e) =>
+                      setFormData({ ...formData, installments: Math.max(1, parseInt(e.target.value) || 1) })
+                    }
+                    className="text-center text-xl font-bold h-12"
+                  />
                 </div>
 
                 <Button
@@ -230,6 +254,11 @@ export default function Sales() {
                         <span className="font-bold text-white text-base">
                           {formatCurrency(sale.totalValue)}
                         </span>
+                        {sale.installments > 1 && (
+                          <span className="text-xs text-primary font-medium">
+                            {sale.installments}x {formatCurrency(sale.installmentValue)}
+                          </span>
+                        )}
                         <div className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-md text-xs">
                           {getPaymentIcon(sale.paymentMethod)}
                           <span>{sale.paymentMethod}</span>
