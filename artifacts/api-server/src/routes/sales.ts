@@ -1,82 +1,79 @@
 import { Router, type IRouter } from "express";
 import { db, salesTable, productsTable, clientsTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { CreateSaleBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
 function formatDate(d: Date) {
   return d.toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
   });
 }
 
-router.get("/sales", async (_req, res) => {
-  const sales = await db.select().from(salesTable).orderBy(salesTable.id);
-  res.json(
-    sales.map((s) => ({
-      id: s.id,
-      clientName: s.clientName,
-      productName: s.productName,
-      paymentMethod: s.paymentMethod,
-      quantity: s.quantity,
-      installments: s.installments,
-      totalValue: parseFloat(s.totalValue),
-      installmentValue: parseFloat(s.installmentValue),
-      date: formatDate(s.date),
-    }))
-  );
+router.get("/sales", async (req, res) => {
+  if (!req.isAuthenticated()) { res.status(401).json({ error: "Unauthorized" }); return; }
+  const sales = await db
+    .select()
+    .from(salesTable)
+    .where(eq(salesTable.userId, req.user.id))
+    .orderBy(salesTable.id);
+  res.json(sales.map((s) => ({
+    id: s.id,
+    clientName: s.clientName,
+    productName: s.productName,
+    paymentMethod: s.paymentMethod,
+    quantity: s.quantity,
+    installments: s.installments,
+    totalValue: parseFloat(s.totalValue),
+    installmentValue: parseFloat(s.installmentValue),
+    date: formatDate(s.date),
+  })));
 });
 
 router.post("/sales", async (req, res) => {
+  if (!req.isAuthenticated()) { res.status(401).json({ error: "Unauthorized" }); return; }
   const body = CreateSaleBody.parse(req.body);
-
   const installments = Math.max(1, body.installments);
+  const uid = req.user.id;
 
-  // Find product and check stock
   const [product] = await db
     .select()
     .from(productsTable)
-    .where(eq(productsTable.name, body.productName));
+    .where(and(eq(productsTable.name, body.productName), eq(productsTable.userId, uid)));
 
   if (product) {
-    if (product.stock < body.quantity) {
-      res.status(400).json({ error: "Estoque insuficiente" });
-      return;
-    }
+    if (product.stock < body.quantity) { res.status(400).json({ error: "Estoque insuficiente" }); return; }
     await db
       .update(productsTable)
       .set({ stock: product.stock - body.quantity })
-      .where(eq(productsTable.name, body.productName));
+      .where(and(eq(productsTable.name, body.productName), eq(productsTable.userId, uid)));
   }
 
   const pricePerUnit = product ? parseFloat(product.price) : 0;
   const totalValue = pricePerUnit * body.quantity;
   const installmentValue = totalValue / installments;
 
-  // Auto-register purchase on linked client (if not avulso)
   if (body.clientName !== "Avulso" && body.clientName.trim() !== "") {
     const [client] = await db
       .select()
       .from(clientsTable)
-      .where(eq(clientsTable.name, body.clientName));
+      .where(and(eq(clientsTable.name, body.clientName), eq(clientsTable.userId, uid)));
     if (client) {
       const newTotal = parseFloat(client.totalPurchases) + totalValue;
       const newBalance = newTotal - parseFloat(client.totalPaid);
       await db
         .update(clientsTable)
         .set({ totalPurchases: String(newTotal), balance: String(newBalance) })
-        .where(eq(clientsTable.id, client.id));
+        .where(and(eq(clientsTable.id, client.id), eq(clientsTable.userId, uid)));
     }
   }
 
   const [sale] = await db
     .insert(salesTable)
     .values({
+      userId: uid,
       clientName: body.clientName,
       productName: body.productName,
       paymentMethod: body.paymentMethod,
