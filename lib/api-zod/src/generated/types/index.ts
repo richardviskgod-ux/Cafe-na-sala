@@ -15,6 +15,7 @@ export * from "./createProductBody";
 export * from "./createSaleBody";
 export * from "./handleBrowserLoginCallbackParams";
 export * from "./healthStatus";
+export * from "./portalClient";
 export * from "./product";
 export * from "./sale";
 export * from "./successResponse";

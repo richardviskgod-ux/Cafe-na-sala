@@ -247,6 +247,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/Sale"
 
+  /portal/client/{code}:
+    get:
+      operationId: getClientByCode
+      summary: Look up a client by their personal code (public)
+      tags: [clients]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Client found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortalClient"
+        "404":
+          description: Code not found
+
   /auth/user:
     get:
       tags: [Auth]
@@ -379,6 +400,35 @@ components:
       schema:
         type: string
   schemas:
+    PortalClient:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        cpf:
+          type: string
+        birthday:
+          type: string
+          nullable: true
+        code:
+          type: integer
+        totalPurchases:
+          type: number
+        totalPaid:
+          type: number
+        balance:
+          type: number
+      required:
+        - id
+        - name
+        - cpf
+        - code
+        - totalPurchases
+        - totalPaid
+        - balance
+
     HealthStatus:
       type: object
       properties:

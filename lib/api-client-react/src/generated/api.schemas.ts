@@ -5,6 +5,17 @@
  * Coffee in the Room API
  * OpenAPI spec version: 0.1.0
  */
+export interface PortalClient {
+  id: number;
+  name: string;
+  cpf: string;
+  birthday?: string | null;
+  code: number;
+  totalPurchases: number;
+  totalPaid: number;
+  balance: number;
+}
+
 export interface HealthStatus {
   status: string;
 }

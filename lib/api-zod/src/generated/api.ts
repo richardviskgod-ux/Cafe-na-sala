@@ -178,6 +178,24 @@ export const CreateSaleBody = zod.object({
 });
 
 /**
+ * @summary Look up a client by their personal code (public)
+ */
+export const GetClientByCodeParams = zod.object({
+  code: zod.coerce.number(),
+});
+
+export const GetClientByCodeResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  cpf: zod.string(),
+  birthday: zod.string().nullish(),
+  code: zod.number(),
+  totalPurchases: zod.number(),
+  totalPaid: zod.number(),
+  balance: zod.number(),
+});
+
+/**
  * @summary Get the currently authenticated user
  */
 export const GetCurrentAuthUserHeader = zod.object({

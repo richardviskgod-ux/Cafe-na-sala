@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@workspace/replit-auth-web";
 
 import Login from "./pages/Login";
+import ClientPortal from "./pages/ClientPortal";
 import Products from "./pages/Products";
 import Clients from "./pages/Clients";
 import Sales from "./pages/Sales";
@@ -28,6 +29,7 @@ function AuthenticatedRoutes() {
     return (
       <Switch>
         <Route path="/login" component={Login} />
+        <Route path="/portal" component={ClientPortal} />
         <Route>{() => <Redirect to="/login" />}</Route>
       </Switch>
     );
@@ -36,6 +38,7 @@ function AuthenticatedRoutes() {
   return (
     <Switch>
       <Route path="/login">{() => <Redirect to="/products" />}</Route>
+      <Route path="/portal" component={ClientPortal} />
       <Route path="/products" component={Products} />
       <Route path="/clients" component={Clients} />
       <Route path="/sales" component={Sales} />

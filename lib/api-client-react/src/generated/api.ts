@@ -30,6 +30,7 @@ import type {
   LogoutSuccess,
   MobileTokenExchangeRequest,
   MobileTokenExchangeSuccess,
+  PortalClient,
   Product,
   Sale,
   SuccessResponse,
@@ -1096,6 +1097,93 @@ export const useCreateSale = <
 > => {
   return useMutation(getCreateSaleMutationOptions(options));
 };
+
+/**
+ * @summary Look up a client by their personal code (public)
+ */
+export const getGetClientByCodeUrl = (code: number) => {
+  return `/api/portal/client/${code}`;
+};
+
+export const getClientByCode = async (
+  code: number,
+  options?: RequestInit,
+): Promise<PortalClient> => {
+  return customFetch<PortalClient>(getGetClientByCodeUrl(code), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetClientByCodeQueryKey = (code: number) => {
+  return [`/api/portal/client/${code}`] as const;
+};
+
+export const getGetClientByCodeQueryOptions = <
+  TData = Awaited<ReturnType<typeof getClientByCode>>,
+  TError = ErrorType<void>,
+>(
+  code: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getClientByCode>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetClientByCodeQueryKey(code);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getClientByCode>>> = ({
+    signal,
+  }) => getClientByCode(code, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!code,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getClientByCode>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetClientByCodeQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getClientByCode>>
+>;
+export type GetClientByCodeQueryError = ErrorType<void>;
+
+/**
+ * @summary Look up a client by their personal code (public)
+ */
+
+export function useGetClientByCode<
+  TData = Awaited<ReturnType<typeof getClientByCode>>,
+  TError = ErrorType<void>,
+>(
+  code: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getClientByCode>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetClientByCodeQueryOptions(code, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
 
 /**
  * @summary Get the currently authenticated user
