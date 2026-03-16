@@ -7,10 +7,13 @@
  */
 
 export * from "./amountBody";
+export * from "./authorizationSessionHeaderParameter";
+export * from "./beginBrowserLoginParams";
 export * from "./client";
 export * from "./createClientBody";
 export * from "./createProductBody";
 export * from "./createSaleBody";
+export * from "./handleBrowserLoginCallbackParams";
 export * from "./healthStatus";
 export * from "./product";
 export * from "./sale";

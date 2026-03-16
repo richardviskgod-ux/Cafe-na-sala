@@ -2,6 +2,7 @@ import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useAuth } from "@workspace/replit-auth-web";
 
 import Login from "./pages/Login";
 import Products from "./pages/Products";
@@ -12,23 +13,35 @@ import NotFound from "./pages/not-found";
 
 const queryClient = new QueryClient();
 
-function Router() {
+function AuthenticatedRoutes() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route>{() => <Redirect to="/login" />}</Route>
+      </Switch>
+    );
+  }
+
   return (
     <Switch>
-      <Route path="/login" component={Login} />
+      <Route path="/login">{() => <Redirect to="/products" />}</Route>
       <Route path="/products" component={Products} />
       <Route path="/clients" component={Clients} />
       <Route path="/sales" component={Sales} />
       <Route path="/admin" component={Admin} />
-      <Route path="/">
-        {() => {
-          const isAuth = localStorage.getItem("auth") === "true";
-          return isAuth ? <Redirect to="/products" /> : <Redirect to="/login" />;
-        }}
-      </Route>
-      <Route path="/dashboard">
-        <Redirect to="/products" />
-      </Route>
+      <Route path="/">{() => <Redirect to="/products" />}</Route>
+      <Route path="/dashboard">{() => <Redirect to="/products" />}</Route>
       <Route component={NotFound} />
     </Switch>
   );
@@ -39,7 +52,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
+          <AuthenticatedRoutes />
         </WouterRouter>
         <Toaster />
       </TooltipProvider>

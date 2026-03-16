@@ -176,3 +176,60 @@ export const CreateSaleBody = zod.object({
   quantity: zod.number(),
   installments: zod.number(),
 });
+
+/**
+ * @summary Get the currently authenticated user
+ */
+export const GetCurrentAuthUserHeader = zod.object({
+  Authorization: zod
+    .string()
+    .optional()
+    .describe("Opaque session token — Bearer <sid>."),
+});
+
+export const GetCurrentAuthUserResponse = zod.unknown();
+
+/**
+ * @summary Start the browser OIDC login flow
+ */
+export const BeginBrowserLoginQueryParams = zod.object({
+  returnTo: zod.coerce.string().optional(),
+});
+
+/**
+ * @summary Complete the browser OIDC login flow
+ */
+export const HandleBrowserLoginCallbackQueryParams = zod.object({
+  code: zod.coerce.string().optional(),
+  state: zod.coerce.string().optional(),
+  iss: zod.coerce.string().url().optional(),
+});
+
+/**
+ * @summary Clear the session and begin OIDC logout
+ */
+export const LogoutBrowserSessionHeader = zod.object({
+  Authorization: zod
+    .string()
+    .optional()
+    .describe("Opaque session token — Bearer <sid>."),
+});
+
+/**
+ * @summary Exchange a mobile OIDC code for a session token
+ */
+export const ExchangeMobileAuthorizationCodeBody = zod.unknown();
+
+export const ExchangeMobileAuthorizationCodeResponse = zod.unknown();
+
+/**
+ * @summary Delete a mobile session token
+ */
+export const LogoutMobileSessionHeader = zod.object({
+  Authorization: zod
+    .string()
+    .optional()
+    .describe("Opaque session token — Bearer <sid>."),
+});
+
+export const LogoutMobileSessionResponse = zod.unknown();

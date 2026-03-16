@@ -69,3 +69,18 @@ export interface CreateSaleBody {
   quantity: number;
   installments: number;
 }
+
+/**
+ * Opaque session token — Bearer <sid>.
+ */
+export type AuthorizationSessionHeaderParameter = string;
+
+export type BeginBrowserLoginParams = {
+  returnTo?: string;
+};
+
+export type HandleBrowserLoginCallbackParams = {
+  code?: string;
+  state?: string;
+  iss?: string;
+};
