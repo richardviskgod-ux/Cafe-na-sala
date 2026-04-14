@@ -10,6 +10,7 @@ import Products from "./pages/Products";
 import Clients from "./pages/Clients";
 import Sales from "./pages/Sales";
 import Admin from "./pages/Admin";
+import ServiceOrders from "./pages/ServiceOrders";
 import NotFound from "./pages/not-found";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ function AuthenticatedRoutes() {
       <Route path="/clients" component={Clients} />
       <Route path="/sales" component={Sales} />
       <Route path="/admin" component={Admin} />
+      <Route path="/orders" component={ServiceOrders} />
       <Route path="/">{() => <Redirect to="/products" />}</Route>
       <Route path="/dashboard">{() => <Redirect to="/products" />}</Route>
       <Route component={NotFound} />

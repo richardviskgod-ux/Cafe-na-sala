@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Coffee, Users, ShoppingBag, LogOut, Shield } from "lucide-react";
+import { Coffee, Users, ShoppingBag, LogOut, Shield, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@workspace/replit-auth-web";
 import { useListClients } from "@workspace/api-client-react";
@@ -10,6 +10,7 @@ const navItems = [
   { name: "Produtos", href: "/products", icon: Coffee },
   { name: "Clientes", href: "/clients", icon: Users },
   { name: "Vendas", href: "/sales", icon: ShoppingBag },
+  { name: "Ordens", href: "/orders", icon: Wrench },
   { name: "Admin", href: "/admin", icon: Shield },
 ];
 
