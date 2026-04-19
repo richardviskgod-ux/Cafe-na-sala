@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Coffee, Users, ShoppingBag, LogOut, Shield, Wrench, Calendar } from "lucide-react";
+import { Coffee, Users, ShoppingBag, LogOut, Shield, Wrench, Calendar, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@workspace/replit-auth-web";
 import { useListClients } from "@workspace/api-client-react";
@@ -83,13 +83,24 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <button
-          onClick={logout}
-          className="mt-auto hidden md:flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-colors"
-        >
-          <LogOut className="w-5 h-5" />
-          <span className="font-medium">Sair</span>
-        </button>
+        <div className="mt-auto hidden md:flex flex-col gap-1">
+          <a
+            href="https://wa.me/5527995833635"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 rounded-xl transition-colors"
+          >
+            <MessageCircle className="w-5 h-5" />
+            <span className="font-medium">Suporte</span>
+          </a>
+          <button
+            onClick={logout}
+            className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Sair</span>
+          </button>
+        </div>
       </aside>
 
       {/* Main Content */}
