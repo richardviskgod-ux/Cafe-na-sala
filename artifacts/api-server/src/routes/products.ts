@@ -36,6 +36,19 @@ router.delete("/products/:id", async (req, res) => {
   res.json({ success: true });
 });
 
+router.patch("/products/:id", async (req, res) => {
+  if (!req.isAuthenticated()) { res.status(401).json({ error: "Unauthorized" }); return; }
+  const { id } = DeleteProductParams.parse({ id: parseInt(req.params.id) });
+  const body = CreateProductBody.parse(req.body);
+  const [updated] = await db
+    .update(productsTable)
+    .set({ name: body.name, price: String(body.price), stock: body.stock })
+    .where(and(eq(productsTable.id, id), eq(productsTable.userId, req.user.id)))
+    .returning();
+  if (!updated) { res.status(404).json({ error: "Produto não encontrado" }); return; }
+  res.json({ id: updated.id, name: updated.name, price: parseFloat(updated.price), stock: updated.stock });
+});
+
 router.post("/products/:id/sell", async (req, res) => {
   if (!req.isAuthenticated()) { res.status(401).json({ error: "Unauthorized" }); return; }
   const id = parseInt(req.params.id);
