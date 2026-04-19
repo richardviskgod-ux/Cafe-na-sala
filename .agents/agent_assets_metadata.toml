@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "EDk4VAWwAUvctOyjjSeDR"
+uri = "file://coffee-in-the-room-codigo.pdf"
+type = "pdf"
+title = "Coffee in the Room — Código-fonte completo"
