@@ -11,7 +11,7 @@ import Clients from "./pages/Clients";
 import Sales from "./pages/Sales";
 import Admin from "./pages/Admin";
 import ServiceOrders from "./pages/ServiceOrders";
-import CalendarPage from "./pages/CalendarPage";
+import CalendarPage from "./pages/Calendar";
 import NotFound from "./pages/not-found";
 
 const queryClient = new QueryClient();
