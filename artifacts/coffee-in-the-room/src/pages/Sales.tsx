@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShoppingBag, CreditCard, Banknote, QrCode, Hash } from "lucide-react";
+import { ShoppingBag, CreditCard, Banknote, QrCode, Hash, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { DashboardLayout } from "./DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { formatCurrency } from "@/lib/utils";
 import {
   useListSales,
   useCreateSale,
+  useDeleteSale,
   useListProducts,
   useListClients,
   getListSalesQueryKey,
@@ -43,6 +44,15 @@ export default function Sales() {
       onError: (err: unknown) => {
         const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
         toast({ title: msg ?? "Erro ao registrar venda.", variant: "destructive" });
+      },
+    },
+  });
+
+  const deleteSale = useDeleteSale({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListSalesQueryKey() });
+        toast({ title: "Venda removida!" });
       },
     },
   });
@@ -238,8 +248,8 @@ export default function Sales() {
                     key={sale.id}
                     className="bg-black/20 border-white/5 hover:bg-black/40 transition-colors"
                   >
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div className="flex flex-col">
+                    <CardContent className="p-4 flex items-center justify-between gap-3">
+                      <div className="flex flex-col flex-1 min-w-0">
                         <span className="font-bold text-lg text-white">
                           {sale.productName}
                           {sale.quantity > 1 && (
@@ -265,6 +275,18 @@ export default function Sales() {
                         </div>
                         <span className="text-xs text-muted-foreground">{sale.date}</span>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => {
+                          if (confirm(`Remover a venda de "${sale.productName}"?`)) {
+                            deleteSale.mutate({ id: sale.id });
+                          }
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}

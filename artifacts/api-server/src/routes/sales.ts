@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, salesTable, productsTable, clientsTable } from "@workspace/db";
 import { and, eq } from "drizzle-orm";
-import { CreateSaleBody } from "@workspace/api-zod";
+import { CreateSaleBody, DeleteProductParams } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
@@ -96,6 +96,13 @@ router.post("/sales", async (req, res) => {
     installmentValue: parseFloat(sale.installmentValue),
     date: formatDate(sale.date),
   });
+});
+
+router.delete("/sales/:id", async (req, res) => {
+  if (!req.isAuthenticated()) { res.status(401).json({ error: "Unauthorized" }); return; }
+  const { id } = DeleteProductParams.parse({ id: parseInt(req.params.id) });
+  await db.delete(salesTable).where(and(eq(salesTable.id, id), eq(salesTable.userId, req.user.id)));
+  res.json({ success: true });
 });
 
 export default router;

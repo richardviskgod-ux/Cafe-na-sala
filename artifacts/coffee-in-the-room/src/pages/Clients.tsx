@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, User, Trash2, ArrowUpCircle, ArrowDownCircle, Search } from "lucide-react";
+import { Plus, User, Trash2, Pencil, ArrowUpCircle, ArrowDownCircle, Search } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { DashboardLayout } from "./DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -220,7 +220,26 @@ export default function Clients() {
                   <Button
                     variant="ghost"
                     size="icon"
+                    className="text-muted-foreground hover:text-primary hover:bg-primary/10"
+                    title="Editar cliente"
+                    onClick={() => {
+                      setFormData({
+                        name: client.name,
+                        cpf: client.cpf,
+                        phone: client.phone ?? "",
+                        birthday: client.birthday ?? "",
+                        initialPurchase: "",
+                      });
+                      setIsAddOpen(true);
+                    }}
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    title="Excluir cliente"
                     onClick={() => {
                       if (confirm(`Excluir cliente ${client.name}? O histórico será perdido.`)) {
                         deleteClient.mutate({ id: client.id });

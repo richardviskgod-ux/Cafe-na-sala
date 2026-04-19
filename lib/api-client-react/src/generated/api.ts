@@ -1708,3 +1708,83 @@ export const useLogoutMobileSession = <
 > => {
   return useMutation(getLogoutMobileSessionMutationOptions(options));
 };
+
+/**
+ * @summary Delete a sale
+ */
+export const getDeleteSaleUrl = (id: number) => {
+  return `/api/sales/${id}`;
+};
+
+export const deleteSale = async (
+  id: number,
+  options?: RequestInit,
+): Promise<SuccessResponse> => {
+  return customFetch<SuccessResponse>(getDeleteSaleUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteSaleMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteSale>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteSale>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteSale"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteSale>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+    return deleteSale(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteSaleMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteSale>>
+>;
+
+export type DeleteSaleMutationError = ErrorType<unknown>;
+
+export const useDeleteSale = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteSale>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteSale>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteSaleMutationOptions(options));
+};
