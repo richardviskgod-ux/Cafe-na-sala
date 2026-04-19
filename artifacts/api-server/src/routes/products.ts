@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { db, productsTable } from "@workspace/db";
+import { db, productsTable, salesTable } from "@workspace/db";
 import { and, eq } from "drizzle-orm";
 import {
   CreateProductBody,
@@ -38,19 +38,37 @@ router.delete("/products/:id", async (req, res) => {
 
 router.post("/products/:id/sell", async (req, res) => {
   if (!req.isAuthenticated()) { res.status(401).json({ error: "Unauthorized" }); return; }
-  const { id } = QuickSellProductParams.parse({ id: parseInt(req.params.id) });
+  const id = parseInt(req.params.id);
+  const uid = req.user.id;
+
   const [product] = await db
     .select()
     .from(productsTable)
-    .where(and(eq(productsTable.id, id), eq(productsTable.userId, req.user.id)));
-  if (!product) { res.status(404).json({ error: "Product not found" }); return; }
+    .where(and(eq(productsTable.id, id), eq(productsTable.userId, uid)));
+
+  if (!product) { res.status(404).json({ error: "Produto não encontrado" }); return; }
   if (product.stock <= 0) { res.status(400).json({ error: "Produto sem estoque" }); return; }
+
   const [updated] = await db
     .update(productsTable)
     .set({ stock: product.stock - 1 })
-    .where(and(eq(productsTable.id, id), eq(productsTable.userId, req.user.id)))
+    .where(and(eq(productsTable.id, id), eq(productsTable.userId, uid)))
     .returning();
-  res.json({ id: updated.id, name: updated.name, price: parseFloat(updated.price), stock: updated.stock });
+
+  const price = parseFloat(updated.price);
+
+  await db.insert(salesTable).values({
+    userId: uid,
+    clientName: "Venda rápida",
+    productName: updated.name,
+    paymentMethod: "Dinheiro",
+    quantity: 1,
+    installments: 1,
+    totalValue: String(price),
+    installmentValue: String(price),
+  });
+
+  res.json({ id: updated.id, name: updated.name, price, stock: updated.stock });
 });
 
 export default router;
