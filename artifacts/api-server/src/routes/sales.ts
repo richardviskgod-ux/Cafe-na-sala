@@ -29,6 +29,7 @@ router.get("/sales", async (req, res) => {
     totalValue: parseFloat(s.totalValue),
     installmentValue: parseFloat(s.installmentValue),
     date: formatDate(s.date),
+    rawDate: s.date.toISOString(),
   })));
 });
 
